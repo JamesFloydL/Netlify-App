@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internal Value Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffffff;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .header-section {
+      text-align: center;
+      margin: 40px auto 20px;
+      max-width: 800px;
+    }
+
+    .header-logo {
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .header-subtitle {
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    h1 {
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      text-align: center;
+      font-size: 60px;
+      margin-top: 40px;
+    }
+
+    .calculator-form {
+      border: 2px solid #e5e7eb;
+      padding: 30px;
+      margin: 0 auto;
+      border-radius: 16px;
+      background-color: #f9fafb;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (max-width: 600px) {
+      .calculator-form {
+        width: 90%;
+      }
+      h1 {
+        font-size: 40px;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .calculator-form {
+        width: 70%;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .calculator-form {
+        width: 50%;
+      }
+    }
+
+    form {
+      font-family: 'Inter', sans-serif;
+      color: #374151;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .slider-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .slider {
+      margin: 10px 0;
+      padding: 5px;
+      font-size: 16px;
+      width: 50%;
+      display: inline-block;
+    }
+
+    #result {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      background-color: #ffffff;
+      color: #1f2937;
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      margin-top: 25px;
+    }
+
+    #savingsComparison {
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      background-color: #f9fafb;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      margin-top: 15px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    #savingsComparison .comparison-line1 {
+      color: #6b7280;
+      font-weight: 400;
+      margin-bottom: 5px;
+    }
+
+    #savingsComparison .comparison-line2 {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    #savingsComparison .delta-positive {
+      color: #059669;
+    }
+
+    #savingsComparison .delta-negative {
+      color: #dc2626;
+    }
+
+    .toggle-container {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f3f4f6;
+      border-radius: 10px;
+    }
+
+    .toggle-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toggle-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .advanced-inputs {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      margin-top: 15px;
+    }
+
+    .advanced-inputs.show {
+      max-height: 300px;
+    }
+
+    .editable-value {
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 3px;
+      transition: background-color 0.2s;
+    }
+
+    .editable-value:hover {
+      background-color: rgba(229, 231, 235, 0.5);
+    }
+
+    .value-input {
+      width: 60px;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      border: 2px solid #9ca3af;
+      border-radius: 6px;
+      background-color: #fff;
+      color: #1f2937;
+      padding: 4px 8px;
+      font-weight: 500;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      background: #e5e7eb;
+      outline: none;
+      border-radius: 4px;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #1f2937;
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #1f2937;
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 600px) {
+      .header-logo {
+        max-width: 280px;
+      }
+      .header-subtitle {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-section">
+  <img src="header-logo.png" alt="BetterWealth Logo" class="header-logo">
+  <h2 class="header-subtitle">Internal Value Calculator</h2>
+</div>
+
+<div class="calculator-form">
+  <form id="myForm">
+    <div class="slider-container">
+      Cash IRR: <span id="cashIRRDisplay" class="editable-value">3.5</span>%<br>
+      <input type="range" class="slider" id="cashIRRSlider" name="cashIRR" min="0" max="20" step="0.5" value="3.5">
+    </div>
+    <div class="slider-container">
+      Tax Rate: <span id="taxRateDisplay" class="editable-value">32</span>%<br>
+      <input type="range" class="slider" id="taxRateSlider" name="taxRate" min="0" max="100" step="1" value="32">
+    </div>
+    <div class="slider-container">
+      Mgmt Fee: <span id="mgmtFeeDisplay" class="editable-value">1</span>%<br>
+      <input type="range" class="slider" id="mgmtFeeSlider" name="mgmtFee" min="0" max="25" step="0.5" value="1">
+    </div>
+    <div class="slider-container">
+      Cost of Insurance: <span id="costInsDisplay" class="editable-value">5</span>%<br>
+      <input type="range" class="slider" id="costInsSlider" name="costIns" min="0" max="25" step="0.5" value="5">
+    </div>
+    <div class="slider-container">
+      Chronic/Critical Illness Rider: <span id="chronicDisplay" class="editable-value">0.0</span>%<br>
+      <input type="range" class="slider" id="chronicSlider" name="chronic" min="0" max="25" step="0.5" value="0">
+    </div>
+    <div class="slider-container">
+      Creditor Protection: <span id="creditorDisplay" class="editable-value">0.0</span>%<br>
+      <input type="range" class="slider" id="creditorSlider" name="creditor" min="0" max="25" step="0.5" value="0">
+    </div>
+  </form>
+  
+  <div class="toggle-container">
+    <label class="toggle-label">
+      <input type="checkbox" id="riskAdjustedToggle" class="toggle-checkbox">
+      Risk-adjusted (certainty-equivalent)
+    </label>
+    <div id="advancedInputs" class="advanced-inputs">
+      <div class="slider-container">
+        Volatility (σ): <span id="sigmaDisplay" class="editable-value">1.0</span>%<br>
+        <input type="range" class="slider" id="sigmaSlider" name="sigma" min="0" max="5" step="0.1" value="1.0">
+      </div>
+      <div class="slider-container">
+        Risk Aversion (λ): <span id="lambdaDisplay" class="editable-value">3.0</span><br>
+        <input type="range" class="slider" id="lambdaSlider" name="lambda" min="1" max="6" step="0.5" value="3.0">
+      </div>
+      <div class="slider-container">
+        Illiquidity Premium: <span id="illiqDisplay" class="editable-value">50</span> bps<br>
+        <input type="range" class="slider" id="illiqSlider" name="illiq" min="0" max="200" step="5" value="50">
+      </div>
+    </div>
+  </div>
+  
+  <p id="result">Result: 0.00%</p>
+  <div id="savingsComparison"></div>
+</div>
+
+<script>
+const SAVINGS_APY_BENCHMARK = 4.0;
+
+function makeEditable(displayId, sliderId, min, max, step) {
+  var display = document.getElementById(displayId);
+  var slider = document.getElementById(sliderId);
+  
+  display.onclick = function() {
+    var currentValue = this.innerHTML;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'value-input';
+    input.value = currentValue;
+    
+    this.innerHTML = '';
+    this.appendChild(input);
+    input.focus();
+    input.select();
+    
+    function finishEdit() {
+      var inputVal = input.value.replace(/[^0-9.\-]/g, '');
+      var newValue = parseFloat(inputVal);
+      if (!isNaN(newValue) && newValue >= min && newValue <= max) {
+        var roundedValue = Math.round(newValue / step) * step;
+        display.innerHTML = roundedValue.toFixed(step < 1 ? 1 : 0);
+        slider.value = roundedValue;
+        calculate();
+      } else {
+        display.innerHTML = currentValue;
+      }
+    }
+    
+    input.onblur = finishEdit;
+    input.onkeydown = function(e) {
+      if (e.key === 'Enter') {
+        finishEdit();
+      } else if (e.key === 'Escape') {
+        display.innerHTML = currentValue;
+      }
+    };
+  };
+}
+
+window.onload = function() {
+  makeEditable('cashIRRDisplay', 'cashIRRSlider', 0, 20, 0.5);
+  makeEditable('taxRateDisplay', 'taxRateSlider', 0, 100, 1);
+  makeEditable('mgmtFeeDisplay', 'mgmtFeeSlider', 0, 25, 0.5);
+  makeEditable('costInsDisplay', 'costInsSlider', 0, 25, 0.5);
+  makeEditable('chronicDisplay', 'chronicSlider', 0, 25, 0.5);
+  makeEditable('creditorDisplay', 'creditorSlider', 0, 25, 0.5);
+  makeEditable('sigmaDisplay', 'sigmaSlider', 0, 5, 0.1);
+  makeEditable('lambdaDisplay', 'lambdaSlider', 1, 6, 0.5);
+  makeEditable('illiqDisplay', 'illiqSlider', 0, 200, 5);
+  
+  document.getElementById('cashIRRSlider').oninput = function() {
+    document.getElementById('cashIRRDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('taxRateSlider').oninput = function() {
+    document.getElementById('taxRateDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('mgmtFeeSlider').oninput = function() {
+    document.getElementById('mgmtFeeDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('costInsSlider').oninput = function() {
+    document.getElementById('costInsDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('chronicSlider').oninput = function() {
+    document.getElementById('chronicDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('creditorSlider').oninput = function() {
+    document.getElementById('creditorDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('sigmaSlider').oninput = function() {
+    document.getElementById('sigmaDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('lambdaSlider').oninput = function() {
+    document.getElementById('lambdaDisplay').innerHTML = this.value;
+    calculate();
+  };
+  document.getElementById('illiqSlider').oninput = function() {
+    document.getElementById('illiqDisplay').innerHTML = this.value;
+    calculate();
+  };
+  
+  document.getElementById('riskAdjustedToggle').onchange = function() {
+    var advancedInputs = document.getElementById('advancedInputs');
+    if (this.checked) {
+      advancedInputs.classList.add('show');
+    } else {
+      advancedInputs.classList.remove('show');
+    }
+    calculate();
+  };
+  
+  calculate();
+};
+
+window.calculate = function() {
+  var cashIRR = parseFloat(document.getElementById('cashIRRDisplay').innerHTML) / 100;
+  var taxRate = parseFloat(document.getElementById('taxRateDisplay').innerHTML) / 100;
+  var mgmtFee = parseFloat(document.getElementById('mgmtFeeDisplay').innerHTML) / 100;
+  var costIns = parseFloat(document.getElementById('costInsDisplay').innerHTML) / 100;
+  var chronic = parseFloat(document.getElementById('chronicDisplay').innerHTML) / 100;
+  var creditor = parseFloat(document.getElementById('creditorDisplay').innerHTML) / 100;
+
+  if (isNaN(cashIRR) || isNaN(taxRate) || isNaN(mgmtFee) || isNaN(costIns) || isNaN(chronic) || isNaN(creditor)) {
+    document.getElementById('result').innerHTML = 'Result: Invalid inputs';
+    document.getElementById('savingsComparison').innerHTML = 
+      '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
+      '% APY: enter valid inputs to see the difference.</div>';
+    return;
+  }
+
+  var preTaxGrossUp = cashIRR / (1 - taxRate);
+  var calculatedIRR = preTaxGrossUp + (1 + preTaxGrossUp) * mgmtFee;
+  
+  var denom = (1 - costIns) * (1 - chronic) * (1 - creditor);
+  if (denom <= 0) {
+    denom = 1e-6;
+  }
+  var wlUnadjusted = calculatedIRR / denom;
+
+  var wlShown = wlUnadjusted;
+  var isRiskAdjusted = document.getElementById('riskAdjustedToggle').checked;
+  
+  if (isRiskAdjusted) {
+    var sigmaPct = parseFloat(document.getElementById('sigmaDisplay').innerHTML);
+    var lambda = parseFloat(document.getElementById('lambdaDisplay').innerHTML);
+    var illiqBps = parseFloat(document.getElementById('illiqDisplay').innerHTML);
+    
+    if (isNaN(sigmaPct) || isNaN(lambda) || isNaN(illiqBps)) {
+      document.getElementById('result').innerHTML = 'Result: Invalid risk inputs';
+      document.getElementById('savingsComparison').innerHTML = 
+        '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
+        '% APY: enter valid inputs to see the difference.</div>';
+      return;
+    }
+    
+    var sigma = sigmaPct / 100;
+    var illiq = illiqBps / 10000;
+    wlShown = wlUnadjusted - 0.5 * lambda * (sigma * sigma) - illiq;
+  }
+
+  var result = wlShown * 100;
+
+  var savingsAfterTax = (SAVINGS_APY_BENCHMARK / 100) * (1 - taxRate);
+  var deltaPct = (wlShown - savingsAfterTax) * 100;
+  var deltaBp = Math.round(deltaPct * 100);
+  
+  var higherLower = wlShown >= savingsAfterTax ? 'higher' : 'lower';
+  var sign = deltaBp >= 0 ? '+' : '';
+  var deltaClass = deltaBp >= 0 ? 'delta-positive' : 'delta-negative';
+
+  var currentResult = parseFloat(document.getElementById('result').innerText.split(': ')[1]);
+  if (isNaN(currentResult)) {
+    currentResult = 0;
+  }
+
+  var increment = (result - currentResult) / 100;
+
+  if (window.calculateInterval) {
+    clearInterval(window.calculateInterval);
+  }
+
+  window.calculateInterval = setInterval(function() {
+    if (Math.abs(result - currentResult) < Math.abs(increment)) {
+      document.getElementById('result').innerHTML = 'Result: ' + result.toFixed(2) + '%';
+      clearInterval(window.calculateInterval);
+    } else {
+      currentResult += increment;
+      document.getElementById('result').innerHTML = 'Result: ' + currentResult.toFixed(2) + '%';
+    }
+  }, 10);
+
+  document.getElementById('savingsComparison').innerHTML = 
+    '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
+    '% APY (after-tax at your rate):</div>' +
+    '<div class="comparison-line2">Your whole life return is <span class="' + deltaClass + '">' + sign + 
+    Math.abs(deltaBp) + ' bp (' + sign + Math.abs(deltaPct).toFixed(2) + '%)</span> ' + higherLower + '.</div>';
+}
+</script>
+
+</body>
+</html>
