@@ -1,0 +1,338 @@
+:root {
+  --bw-text: #1F2937;
+  --bw-muted: #6B7280;
+  --bw-surface: #F7F7F9;
+  --bw-border: #E5E7EB;
+  --bw-accent: #111827;
+  --bw-green: #16A34A;
+  --bw-red: #DC2626;
+  --bw-card-bg: #FFFFFF;
+  --bw-hover: #F9FAFB;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bw-text: #E5E7EB;
+    --bw-muted: #9CA3AF;
+    --bw-surface: #1F2937;
+    --bw-border: #374151;
+    --bw-accent: #F9FAFB;
+    --bw-card-bg: #111827;
+    --bw-hover: #374151;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bw-surface);
+  color: var(--bw-text);
+  line-height: 1.6;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calculator-container {
+  background-color: var(--bw-card-bg);
+  max-width: 720px;
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 2.5rem;
+}
+
+.calculator-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.logo {
+  max-width: 240px;
+  height: auto;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--bw-accent);
+  letter-spacing: -0.025em;
+}
+
+.control-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: var(--bw-surface);
+  border-radius: 16px;
+  border: 1px solid var(--bw-border);
+}
+
+.control-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--bw-text);
+  margin-bottom: 1rem;
+}
+
+.control-inputs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#controlInput {
+  flex: 0 0 100px;
+  padding: 0.625rem;
+  font-size: 1rem;
+  border: 1px solid var(--bw-border);
+  border-radius: 8px;
+  background-color: var(--bw-card-bg);
+  color: var(--bw-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#controlInput:focus {
+  outline: none;
+  border-color: var(--bw-accent);
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+#controlSlider {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bw-border);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+#controlSlider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bw-accent);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#controlSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+#controlSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bw-accent);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+}
+
+#controlSlider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.control-display {
+  font-size: 1rem;
+  color: var(--bw-muted);
+  text-align: center;
+}
+
+.control-value {
+  font-weight: 700;
+  color: var(--bw-red);
+  font-size: 1.125rem;
+}
+
+.results-section {
+  margin-bottom: 2rem;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--bw-border);
+}
+
+.results-table thead {
+  background-color: var(--bw-surface);
+}
+
+.results-table th {
+  padding: 1rem;
+  text-align: right;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bw-muted);
+  border-bottom: 2px solid var(--bw-border);
+}
+
+.results-table th:first-child {
+  text-align: left;
+}
+
+.results-table tbody tr {
+  border-bottom: 1px solid var(--bw-border);
+  transition: background-color 0.15s;
+}
+
+.results-table tbody tr:hover {
+  background-color: var(--bw-hover);
+}
+
+.results-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.results-table td {
+  padding: 1rem;
+  text-align: right;
+  font-size: 1rem;
+}
+
+.results-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.results-table tr.current-control {
+  background-color: var(--bw-surface);
+  font-weight: 600;
+}
+
+.return-positive {
+  color: var(--bw-green);
+  font-weight: 600;
+}
+
+.return-negative {
+  color: var(--bw-red);
+  font-weight: 600;
+}
+
+.return-zero {
+  color: var(--bw-muted);
+  font-weight: 600;
+}
+
+.controls-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--bw-surface);
+  border-radius: 16px;
+  border: 1px solid var(--bw-border);
+}
+
+.opportunities-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--bw-text);
+  margin-bottom: 0.5rem;
+}
+
+#opportunitiesInput {
+  width: 100%;
+  padding: 0.625rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--bw-border);
+  border-radius: 8px;
+  background-color: var(--bw-card-bg);
+  color: var(--bw-text);
+  margin-bottom: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#opportunitiesInput:focus {
+  outline: none;
+  border-color: var(--bw-accent);
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+
+.copy-button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--bw-card-bg);
+  background-color: var(--bw-accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.copy-button:hover {
+  opacity: 0.9;
+}
+
+.copy-button:active {
+  transform: scale(0.98);
+}
+
+.copy-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.3);
+}
+
+.calculator-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--bw-border);
+}
+
+.caption {
+  font-size: 0.875rem;
+  color: var(--bw-muted);
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 1rem;
+  }
+
+  .calculator-container {
+    padding: 1.5rem;
+  }
+
+  .logo {
+    max-width: 180px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .control-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #controlInput {
+    flex: 1;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
