@@ -171,7 +171,65 @@
     }
 
     .advanced-inputs.show {
-      max-height: 300px;
+      max-height: 400px;
+    }
+
+    .helper-text {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .tooltip-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-color: #9ca3af;
+      color: #ffffff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 16px;
+      font-size: 12px;
+      cursor: help;
+      margin-left: 4px;
+      position: relative;
+    }
+
+    .tooltip-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1f2937;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: normal;
+      width: 220px;
+      text-align: left;
+      z-index: 1000;
+      line-height: 1.4;
+      font-weight: 400;
+    }
+
+    .hurdle-check {
+      margin-top: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #ffffff;
+    }
+
+    .hurdle-pass {
+      color: #059669;
+    }
+
+    .hurdle-fail {
+      color: #dc2626;
     }
 
     .editable-value {
@@ -281,26 +339,20 @@
     </label>
     <div id="advancedInputs" class="advanced-inputs">
       <div class="slider-container">
-        Volatility (σ): <span id="sigmaDisplay" class="editable-value">1.0</span>%<br>
-        <input type="range" class="slider" id="sigmaSlider" name="sigma" min="0" max="5" step="0.1" value="1.0">
+        Risk Premium: <span id="riskPremiumDisplay" class="editable-value">2.0</span>%<span class="tooltip-icon" data-tooltip="If 3% feels 'safe,' how much more would the market need to pay you to make the risk worth it?">ⓘ</span><br>
+        <input type="range" class="slider" id="riskPremiumSlider" name="riskPremium" min="0" max="10" step="0.25" value="2.0">
+        <div class="helper-text">Risk Premium is how much extra return you expect above a 3% 'risk-free' rate to feel like taking market risk is worth it.</div>
       </div>
-      <div class="slider-container">
-        Risk Aversion (λ): <span id="lambdaDisplay" class="editable-value">3.0</span><br>
-        <input type="range" class="slider" id="lambdaSlider" name="lambda" min="1" max="6" step="0.5" value="3.0">
-      </div>
-      <div class="slider-container">
-        Illiquidity Premium: <span id="illiqDisplay" class="editable-value">50</span> bps<br>
-        <input type="range" class="slider" id="illiqSlider" name="illiq" min="0" max="200" step="5" value="50">
-      </div>
+      <div id="hurdleCheck" class="hurdle-check"></div>
     </div>
   </div>
   
-  <p id="result">Result: 0.00%</p>
+  <p id="result">Equivalent Return: 0.00%</p>
   <div id="savingsComparison"></div>
 </div>
 
 <script>
-const SAVINGS_APY_BENCHMARK = 4.0;
+const SAVINGS_APY_BENCHMARK = 2.0;
 
 function makeEditable(displayId, sliderId, min, max, step) {
   var display = document.getElementById(displayId);
@@ -349,9 +401,7 @@ window.onload = function() {
   makeEditable('costInsDisplay', 'costInsSlider', 0, 25, 0.5);
   makeEditable('chronicDisplay', 'chronicSlider', 0, 25, 0.5);
   makeEditable('creditorDisplay', 'creditorSlider', 0, 25, 0.5);
-  makeEditable('sigmaDisplay', 'sigmaSlider', 0, 5, 0.1);
-  makeEditable('lambdaDisplay', 'lambdaSlider', 1, 6, 0.5);
-  makeEditable('illiqDisplay', 'illiqSlider', 0, 200, 5);
+  makeEditable('riskPremiumDisplay', 'riskPremiumSlider', 0, 10, 0.25);
   
   document.getElementById('cashIRRSlider').oninput = function() {
     document.getElementById('cashIRRDisplay').innerHTML = this.value;
@@ -377,16 +427,8 @@ window.onload = function() {
     document.getElementById('creditorDisplay').innerHTML = this.value;
     calculate();
   };
-  document.getElementById('sigmaSlider').oninput = function() {
-    document.getElementById('sigmaDisplay').innerHTML = this.value;
-    calculate();
-  };
-  document.getElementById('lambdaSlider').oninput = function() {
-    document.getElementById('lambdaDisplay').innerHTML = this.value;
-    calculate();
-  };
-  document.getElementById('illiqSlider').oninput = function() {
-    document.getElementById('illiqDisplay').innerHTML = this.value;
+  document.getElementById('riskPremiumSlider').oninput = function() {
+    document.getElementById('riskPremiumDisplay').innerHTML = this.value;
     calculate();
   };
   
@@ -412,10 +454,10 @@ window.calculate = function() {
   var creditor = parseFloat(document.getElementById('creditorDisplay').innerHTML) / 100;
 
   if (isNaN(cashIRR) || isNaN(taxRate) || isNaN(mgmtFee) || isNaN(costIns) || isNaN(chronic) || isNaN(creditor)) {
-    document.getElementById('result').innerHTML = 'Result: Invalid inputs';
+    document.getElementById('result').innerHTML = 'Equivalent Return: Invalid inputs';
     document.getElementById('savingsComparison').innerHTML = 
-      '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
-      '% APY: enter valid inputs to see the difference.</div>';
+      '<div class="comparison-line1">On average, over the last 30 years, high-yield savings accounts earned around 1–2.5% APY (after tax).</div>' +
+      '<div class="comparison-line2">Enter valid inputs to see the difference.</div>';
     return;
   }
 
@@ -432,32 +474,42 @@ window.calculate = function() {
   var isRiskAdjusted = document.getElementById('riskAdjustedToggle').checked;
   
   if (isRiskAdjusted) {
-    var sigmaPct = parseFloat(document.getElementById('sigmaDisplay').innerHTML);
-    var lambda = parseFloat(document.getElementById('lambdaDisplay').innerHTML);
-    var illiqBps = parseFloat(document.getElementById('illiqDisplay').innerHTML);
+    var riskPremiumPct = parseFloat(document.getElementById('riskPremiumDisplay').innerHTML);
     
-    if (isNaN(sigmaPct) || isNaN(lambda) || isNaN(illiqBps)) {
-      document.getElementById('result').innerHTML = 'Result: Invalid risk inputs';
+    if (isNaN(riskPremiumPct)) {
+      document.getElementById('result').innerHTML = 'Equivalent Return: Invalid risk inputs';
       document.getElementById('savingsComparison').innerHTML = 
-        '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
-        '% APY: enter valid inputs to see the difference.</div>';
+        '<div class="comparison-line1">On average, over the last 30 years, high-yield savings accounts earned around 1–2.5% APY (after tax).</div>' +
+        '<div class="comparison-line2">Enter valid inputs to see the difference.</div>';
       return;
     }
     
-    var sigma = sigmaPct / 100;
-    var illiq = illiqBps / 10000;
-    wlShown = wlUnadjusted - 0.5 * lambda * (sigma * sigma) - illiq;
+    var riskPremium = riskPremiumPct / 100;
+    wlShown = wlUnadjusted - riskPremium;
+    
+    var riskFreeRate = 0.03;
+    var requiredReturn = riskFreeRate + riskPremium;
+    var hurdleCheckDiv = document.getElementById('hurdleCheck');
+    
+    if (wlShown >= requiredReturn) {
+      hurdleCheckDiv.innerHTML = '<span class="hurdle-pass">Your policy clears your risk hurdle.</span>';
+      hurdleCheckDiv.className = 'hurdle-check';
+    } else {
+      hurdleCheckDiv.innerHTML = '<span class="hurdle-fail">Your policy does not clear your risk hurdle.</span>';
+      hurdleCheckDiv.className = 'hurdle-check';
+    }
+  } else {
+    document.getElementById('hurdleCheck').innerHTML = '';
   }
 
   var result = wlShown * 100;
 
-  var savingsAfterTax = (SAVINGS_APY_BENCHMARK / 100) * (1 - taxRate);
-  var deltaPct = (wlShown - savingsAfterTax) * 100;
-  var deltaBp = Math.round(deltaPct * 100);
+  var savingsBenchmark = SAVINGS_APY_BENCHMARK / 100;
+  var deltaPct = (wlShown - savingsBenchmark) * 100;
   
-  var higherLower = wlShown >= savingsAfterTax ? 'higher' : 'lower';
-  var sign = deltaBp >= 0 ? '+' : '';
-  var deltaClass = deltaBp >= 0 ? 'delta-positive' : 'delta-negative';
+  var higherLower = wlShown >= savingsBenchmark ? 'higher' : 'lower';
+  var deltaClass = deltaPct >= 0 ? 'delta-positive' : 'delta-negative';
+  var absPercent = Math.abs(deltaPct).toFixed(2);
 
   var currentResult = parseFloat(document.getElementById('result').innerText.split(': ')[1]);
   if (isNaN(currentResult)) {
@@ -472,19 +524,17 @@ window.calculate = function() {
 
   window.calculateInterval = setInterval(function() {
     if (Math.abs(result - currentResult) < Math.abs(increment)) {
-      document.getElementById('result').innerHTML = 'Result: ' + result.toFixed(2) + '%';
+      document.getElementById('result').innerHTML = 'Equivalent Return: ' + result.toFixed(2) + '%';
       clearInterval(window.calculateInterval);
     } else {
       currentResult += increment;
-      document.getElementById('result').innerHTML = 'Result: ' + currentResult.toFixed(2) + '%';
+      document.getElementById('result').innerHTML = 'Equivalent Return: ' + currentResult.toFixed(2) + '%';
     }
   }, 10);
 
   document.getElementById('savingsComparison').innerHTML = 
-    '<div class="comparison-line1">Compared to an average savings account at ' + SAVINGS_APY_BENCHMARK.toFixed(1) + 
-    '% APY (after-tax at your rate):</div>' +
-    '<div class="comparison-line2">Your whole life return is <span class="' + deltaClass + '">' + sign + 
-    Math.abs(deltaBp) + ' bp (' + sign + Math.abs(deltaPct).toFixed(2) + '%)</span> ' + higherLower + '.</div>';
+    '<div class="comparison-line1">On average, over the last 30 years, high-yield savings accounts earned around 1–2.5% APY (after tax).</div>' +
+    '<div class="comparison-line2">That means your whole life equivalent return of <strong>' + result.toFixed(2) + '%</strong> is <span class="' + deltaClass + '">' + absPercent + '% ' + higherLower + '</span>.</div>';
 }
 </script>
 
