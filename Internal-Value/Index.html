@@ -356,7 +356,7 @@
 </div>
 
 <script>
-const SAVINGS_APY_BENCHMARK = 2.0;
+const SAVINGS_APY_BENCHMARK = 2.5;
 
 function makeEditable(displayId, sliderId, min, max, step) {
   var display = document.getElementById(displayId);
@@ -509,11 +509,11 @@ window.calculate = function() {
   var result = wlShown * 100;
 
   var savingsBenchmark = SAVINGS_APY_BENCHMARK / 100;
-  var deltaPct = (wlShown - savingsBenchmark) * 100;
+  var percentDifference = ((wlShown - savingsBenchmark) / savingsBenchmark) * 100;
   
-  var higherLower = wlShown >= savingsBenchmark ? 'higher' : 'lower';
-  var deltaClass = deltaPct >= 0 ? 'delta-positive' : 'delta-negative';
-  var absPercent = Math.abs(deltaPct).toFixed(2);
+  var higherLower = percentDifference >= 0 ? 'higher' : 'lower';
+  var deltaClass = percentDifference >= 0 ? 'delta-positive' : 'delta-negative';
+  var absPercent = Math.abs(percentDifference).toFixed(1);
 
   var currentResult = parseFloat(document.getElementById('result').innerText.split(': ')[1]);
   if (isNaN(currentResult)) {
@@ -537,8 +537,8 @@ window.calculate = function() {
   }, 10);
 
   document.getElementById('savingsComparison').innerHTML = 
-    '<div class="comparison-line1">On average, over the last 30 years, high-yield savings accounts earned around 1–2.5% APY (after tax).</div>' +
-    '<div class="comparison-line2">That means your whole life equivalent return of <strong>' + result.toFixed(2) + '%</strong> is <span class="' + deltaClass + '">' + absPercent + '% ' + higherLower + '</span>.</div>';
+    '<div class="comparison-line1">Over the last 30 years, high-yield savings accounts earned around 2.5%.</div>' +
+    '<div class="comparison-line2">That means your whole life equivalent return is <span class="' + deltaClass + '">' + absPercent + '% ' + higherLower + ' than 2.5%</span>.</div>';
 }
 </script>
 
