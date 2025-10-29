@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Wealth Assessment Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <h2>Your Info</h2>
+            
+            <div class="form-group">
+                <label for="retirement-age">Planned retirement age</label>
+                <input type="number" id="retirement-age" value="26">
+            </div>
+            
+            <div class="form-group">
+                <label for="initial-amount">Initial amount saved</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="initial-amount" value="10000">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount-per-year">Amount saved per year</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="amount-per-year" value="5000">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="projected-inflation">Projected inflation</label>
+                <div class="input-with-symbol">
+                    <input type="number" id="projected-inflation" value="2" step="0.1">
+                    <span>%</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="return-before">Return before retirement</label>
+                <div class="input-with-symbol">
+                    <input type="number" id="return-before" value="6" step="0.1">
+                    <span>%</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="return-after">Return after retirement</label>
+                <div class="input-with-symbol">
+                    <input type="number" id="return-after" value="4" step="0.1">
+                    <span>%</span>
+                </div>
+            </div>
+
+            <h2>Income Sources</h2>
+            
+            <div id="income-sources">
+                <div class="income-source">
+                    <div class="form-group">
+                        <label for="income-amount-0">Amount</label>
+                        <div class="input-with-symbol">
+                            <span>$</span>
+                            <input type="number" id="income-amount-0" value="50000">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="annual-increase-0">Annual increase</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="annual-increase-0" value="3" step="0.1">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="start-age-0">Start age</label>
+                        <input type="number" id="start-age-0" value="27">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stop-age-0">Stop age</label>
+                        <input type="number" id="stop-age-0" value="27">
+                    </div>
+                </div>
+            </div>
+            
+            <button id="add-income-btn" class="btn btn-secondary">+ Add another income</button>
+            <button id="calculate-btn" class="btn btn-primary">Calculate!</button>
+        </div>
+
+        <div class="results-section">
+            <h2>Better Wealth Assessment</h2>
+            
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-label">Starting Income</div>
+                    <div class="stat-value" id="starting-income">$50,000</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Consumed Income</div>
+                    <div class="stat-value" id="consumed-income">$45,000</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Age Income Drops</div>
+                    <div class="stat-value red" id="age-income-drops">28</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="wealth-chart"></canvas>
+            </div>
+            
+            <div class="message-box">
+                <div class="message-header">
+                    <span class="message-icon">😞</span>
+                    <span class="message-title">Yikes!</span>
+                </div>
+                <div class="message-content">
+                    <span class="warning-text">You are out of balance!</span>
+                    Don't worry though, this is an opportunity to improve your financial model. Check out the information below to learn more.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
