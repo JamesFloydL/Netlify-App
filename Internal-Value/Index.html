@@ -107,6 +107,42 @@
       margin-top: 25px;
     }
 
+    #riskAdjustedResult {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      background-color: #ffffff;
+      color: #1f2937;
+      padding: 20px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      margin-top: 15px;
+      display: none;
+    }
+
+    #riskAdjustedResult.show {
+      display: block;
+    }
+
+    #riskAdjustedExplanation {
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      background-color: #f9fafb;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #6b7280;
+      display: none;
+    }
+
+    #riskAdjustedExplanation.show {
+      display: block;
+    }
+
     #savingsComparison {
       font-family: 'Inter', sans-serif;
       text-align: center;
@@ -348,6 +384,8 @@
   </div>
   
   <p id="result">Equivalent Return: 0.00%</p>
+  <p id="riskAdjustedResult">Risk-Adjusted Return: 0.00%</p>
+  <div id="riskAdjustedExplanation"></div>
   <div id="savingsComparison"></div>
 </div>
 
@@ -539,6 +577,25 @@ window.calculate = function() {
   document.getElementById('savingsComparison').innerHTML = 
     '<div class="comparison-line1">Over the last 30 years, high-yield savings accounts earned around 2.5%.</div>' +
     '<div class="comparison-line2">That means your whole life equivalent return is <span class="' + deltaClass + '">' + absPercent + '% ' + higherLower + ' than 2.5%</span>.</div>';
+
+  var riskAdjustedBox = document.getElementById('riskAdjustedResult');
+  var riskAdjustedExpl = document.getElementById('riskAdjustedExplanation');
+  
+  if (isRiskAdjusted) {
+    var riskDiscount = 0.35;
+    var equivalentSafeYield = wlShown / (1 - riskDiscount);
+    var riskAdjustedPercent = equivalentSafeYield * 100;
+    
+    riskAdjustedBox.innerHTML = 'Risk-Adjusted Return: ' + riskAdjustedPercent.toFixed(2) + '%';
+    riskAdjustedBox.classList.add('show');
+    
+    var wlReturnPercent = (wlShown * 100).toFixed(2);
+    riskAdjustedExpl.innerHTML = 'A Whole Life Equivalent return of ' + wlReturnPercent + '% feels like a ' + riskAdjustedPercent.toFixed(2) + '% market return when you account for risk.';
+    riskAdjustedExpl.classList.add('show');
+  } else {
+    riskAdjustedBox.classList.remove('show');
+    riskAdjustedExpl.classList.remove('show');
+  }
 }
 </script>
 
