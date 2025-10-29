@@ -1,0 +1,26 @@
+[build]
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/success"
+  to = "/thank-you.html"
+  status = 200
+
+# Form submission success page
+[[redirects]]
+  from = "/*"
+  to = "/thank-you.html"
+  status = 200
+  conditions = {Role = ["form-submission"]}
+
+# Fallback for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  port = 8888
