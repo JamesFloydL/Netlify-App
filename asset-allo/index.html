@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Allocation & Life Insurance Calculator</title>
+    <title>Asset Allocation & Risk Tool</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
+        <div class="back-link">
+            <a href="../TheCenterofItAll/index.html">← Back to All Calculators</a>
+        </div>
+
         <header>
-            <h1>Smart Asset Allocation & Life Insurance Calculator</h1>
-            <p>Optimize your financial portfolio with personalized insights</p>
+            <h1>Asset Allocation & Risk Tool</h1>
+            <p>Compare your portfolio with famous family wealth models</p>
         </header>
 
         <div class="calculator-wrapper">
-            <!-- Step 1: Basic Information -->
             <section class="step active" id="step1">
-                <h2>Tell Us About Your Finances</h2>
+                <h2>Your Financial Profile</h2>
                 <form id="basicInfoForm">
                     <div class="form-group">
                         <label for="age">Age:</label>
@@ -52,23 +55,17 @@
                 </form>
             </section>
 
-            <!-- Step 2: Asset Allocation -->
             <section class="step" id="step2">
                 <h2>Current Asset Breakdown</h2>
                 <form id="assetForm">
                     <div class="form-group">
-                        <label for="cash">Cash & Savings ($):</label>
+                        <label for="cash">Cash & Bonds ($):</label>
                         <input type="number" id="cash" min="0" step="100" value="0">
                     </div>
                     
                     <div class="form-group">
-                        <label for="stocks">Stocks & Securities ($):</label>
+                        <label for="stocks">Public Equities ($):</label>
                         <input type="number" id="stocks" min="0" step="100" value="0">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="bonds">Bonds & Fixed Income ($):</label>
-                        <input type="number" id="bonds" min="0" step="100" value="0">
                     </div>
                     
                     <div class="form-group">
@@ -77,13 +74,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="retirement">Retirement Accounts ($):</label>
-                        <input type="number" id="retirement" min="0" step="100" value="0">
+                        <label for="privateBusiness">Private Business ($):</label>
+                        <input type="number" id="privateBusiness" min="0" step="100" value="0">
                     </div>
                     
                     <div class="form-group">
-                        <label for="other">Other Investments ($):</label>
-                        <input type="number" id="other" min="0" step="100" value="0">
+                        <label for="alternatives">Alternative Investments ($):</label>
+                        <input type="number" id="alternatives" min="0" step="100" value="0">
                     </div>
                     
                     <div class="total-display">
@@ -97,48 +94,48 @@
                 </form>
             </section>
 
-            <!-- Step 3: Results -->
             <section class="step" id="step3">
                 <h2>Your Personalized Analysis</h2>
                 
                 <div class="results-container">
-                    <!-- Current vs Optimized Allocation -->
+                    <div class="benchmark-selector">
+                        <label for="benchmarkModel">Select Benchmark Model:</label>
+                        <select id="benchmarkModel" onchange="updateBenchmarkChart()">
+                            <option value="rockefeller">Rockefeller Model</option>
+                            <option value="walton">Walton Family Model</option>
+                            <option value="trump">Trump Estate Model</option>
+                            <option value="disney">Disney Family Model</option>
+                        </select>
+                    </div>
+
+                    <div class="hlv-card">
+                        <h3>Your Human Life Value</h3>
+                        <div class="hlv-value" id="hlvValue">$0</div>
+                        <div class="coverage-gap" id="coverageGap"></div>
+                    </div>
+
                     <div class="chart-section">
-                        <h3>Current vs Recommended Asset Allocation</h3>
+                        <h3>Asset Allocation Comparison</h3>
                         <div class="charts-wrapper">
                             <div class="chart-container">
-                                <h4>Current Allocation</h4>
+                                <h4>Your Current Allocation</h4>
                                 <canvas id="currentChart"></canvas>
                             </div>
                             <div class="chart-container">
                                 <h4>Recommended Allocation</h4>
                                 <canvas id="recommendedChart"></canvas>
                             </div>
+                            <div class="chart-container">
+                                <h4>Benchmark Model Allocation</h4>
+                                <canvas id="benchmarkChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="alignment-score">
+                            <strong>Alignment Score: <span id="alignmentScore">0</span>%</strong>
+                            <p>How closely your portfolio matches the selected benchmark</p>
                         </div>
                     </div>
 
-                    <!-- Life Insurance Analysis -->
-                    <div class="insurance-analysis">
-                        <h3>Life Insurance Analysis</h3>
-                        <div id="insuranceResults"></div>
-                    </div>
-
-                    <!-- Pros and Cons -->
-                    <div class="pros-cons">
-                        <h3>Life Insurance Benefits Analysis</h3>
-                        <div class="pros-cons-grid">
-                            <div class="pros">
-                                <h4>✅ Pros</h4>
-                                <ul id="prosList"></ul>
-                            </div>
-                            <div class="cons">
-                                <h4>⚠️ Considerations</h4>
-                                <ul id="consList"></ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Items -->
                     <div class="action-items">
                         <h3>Recommended Actions</h3>
                         <ul id="actionList"></ul>
@@ -151,13 +148,11 @@
                 </div>
             </section>
 
-            <!-- Lead Capture Form -->
             <section class="step" id="leadCapture">
                 <h2>Get Your Detailed Financial Report</h2>
                 <p>Enter your information to receive a comprehensive analysis and personalized recommendations.</p>
                 
                 <form id="leadForm" name="financial-report" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
-                    <!-- Honeypot field for spam prevention -->
                     <div style="display: none;">
                         <label for="bot-field">Don't fill this out if you're human:</label>
                         <input name="bot-field" />
@@ -191,10 +186,6 @@
                 </form>
             </section>
         </div>
-    </div>
-
-    <div style="text-align: center; margin-top: 40px; padding: 20px;">
-        <a href="/TheCenterofItAll/index.html" style="display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.2);">← Back to Calculator Hub</a>
     </div>
 
     <script src="calculator.js"></script>

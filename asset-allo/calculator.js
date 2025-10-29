@@ -1,15 +1,48 @@
-// Global variables to store user data
 let userData = {};
 let currentStep = 1;
+let charts = {};
 
-// Initialize the application
+const BENCHMARK_MODELS = {
+    rockefeller: {
+        name: 'Rockefeller Model',
+        alternatives: 40,
+        stocks: 25,
+        realEstate: 20,
+        cash: 10,
+        privateBusiness: 5
+    },
+    walton: {
+        name: 'Walton Family Model',
+        stocks: 50,
+        privateBusiness: 20,
+        realEstate: 15,
+        cash: 10,
+        alternatives: 5
+    },
+    trump: {
+        name: 'Trump Estate Model',
+        realEstate: 60,
+        stocks: 15,
+        cash: 10,
+        privateBusiness: 10,
+        alternatives: 5
+    },
+    disney: {
+        name: 'Disney Family Model',
+        privateBusiness: 50,
+        stocks: 20,
+        realEstate: 15,
+        cash: 10,
+        alternatives: 5
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     updateAssetTotals();
     setupEventListeners();
 });
 
 function setupEventListeners() {
-    // Life insurance selection change
     document.getElementById('hasLifeInsurance').addEventListener('change', function() {
         const existingCoverageGroup = document.getElementById('existingCoverageGroup');
         if (this.value === 'yes') {
@@ -19,8 +52,7 @@ function setupEventListeners() {
         }
     });
 
-    // Asset input listeners
-    const assetInputs = ['cash', 'stocks', 'bonds', 'realEstate', 'retirement', 'other'];
+    const assetInputs = ['cash', 'stocks', 'realEstate', 'privateBusiness', 'alternatives'];
     assetInputs.forEach(id => {
         document.getElementById(id).addEventListener('input', updateAssetTotals);
     });
@@ -29,12 +61,11 @@ function setupEventListeners() {
 function updateAssetTotals() {
     const cash = parseFloat(document.getElementById('cash').value) || 0;
     const stocks = parseFloat(document.getElementById('stocks').value) || 0;
-    const bonds = parseFloat(document.getElementById('bonds').value) || 0;
     const realEstate = parseFloat(document.getElementById('realEstate').value) || 0;
-    const retirement = parseFloat(document.getElementById('retirement').value) || 0;
-    const other = parseFloat(document.getElementById('other').value) || 0;
+    const privateBusiness = parseFloat(document.getElementById('privateBusiness').value) || 0;
+    const alternatives = parseFloat(document.getElementById('alternatives').value) || 0;
     
-    const total = cash + stocks + bonds + realEstate + retirement + other;
+    const total = cash + stocks + realEstate + privateBusiness + alternatives;
     document.getElementById('totalNetWorth').textContent = formatCurrency(total);
 }
 
@@ -56,7 +87,6 @@ function showStep(stepNumber) {
 }
 
 function showLeadForm() {
-    // Store calculator data in hidden field
     document.getElementById('calculatorData').value = JSON.stringify(userData);
     showStep('leadCapture');
 }
@@ -86,13 +116,23 @@ function collectStepData() {
         userData.assets = {
             cash: parseFloat(document.getElementById('cash').value) || 0,
             stocks: parseFloat(document.getElementById('stocks').value) || 0,
-            bonds: parseFloat(document.getElementById('bonds').value) || 0,
             realEstate: parseFloat(document.getElementById('realEstate').value) || 0,
-            retirement: parseFloat(document.getElementById('retirement').value) || 0,
-            other: parseFloat(document.getElementById('other').value) || 0
+            privateBusiness: parseFloat(document.getElementById('privateBusiness').value) || 0,
+            alternatives: parseFloat(document.getElementById('alternatives').value) || 0
         };
         userData.totalNetWorth = Object.values(userData.assets).reduce((sum, val) => sum + val, 0);
     }
+}
+
+function calculateHumanLifeValue() {
+    const { annualIncome, age } = userData;
+    const workingYears = Math.min(Math.max(0, 65 - age), 40);
+    const humanLifeValue = annualIncome * workingYears * 0.70;
+    
+    return {
+        value: humanLifeValue,
+        workingYears: workingYears
+    };
 }
 
 function calculateResults() {
@@ -100,98 +140,102 @@ function calculateResults() {
     
     collectStepData();
     
-    // Calculate recommended life insurance coverage
-    const recommendedCoverage = calculateRecommendedLifeInsurance();
-    
-    // Generate asset allocation recommendations
     const recommendedAllocation = getRecommendedAssetAllocation();
+    const hlv = calculateHumanLifeValue();
     
-    // Store results
     userData.recommendations = {
-        lifeInsurance: recommendedCoverage,
-        assetAllocation: recommendedAllocation
+        assetAllocation: recommendedAllocation,
+        humanLifeValue: hlv
     };
     
-    // Display results
     displayResults();
     showStep(3);
-}
-
-function calculateRecommendedLifeInsurance() {
-    const { annualIncome, dependents, age, totalNetWorth, existingCoverage } = userData;
-    
-    // Base calculation: 8-12x annual income depending on dependents and age
-    let multiplier = 8;
-    if (dependents > 0) multiplier += dependents;
-    if (age < 35) multiplier += 1;
-    if (age > 55) multiplier -= 1;
-    
-    const baseRecommendation = annualIncome * multiplier;
-    
-    // Adjust for existing net worth (reduces need)
-    const adjustedRecommendation = Math.max(baseRecommendation - (totalNetWorth * 0.5), annualIncome * 5);
-    
-    return {
-        recommended: Math.round(adjustedRecommendation / 1000) * 1000,
-        current: existingCoverage,
-        gap: Math.max(0, adjustedRecommendation - existingCoverage),
-        adequacy: existingCoverage >= adjustedRecommendation * 0.8 ? 'Adequate' : 
-                 existingCoverage >= adjustedRecommendation * 0.5 ? 'Moderate' : 'Insufficient'
-    };
 }
 
 function getRecommendedAssetAllocation() {
     const { age, totalNetWorth } = userData;
     
-    // Age-based allocation (common rule: 100 - age = stock percentage)
-    const stockPercentage = Math.max(20, Math.min(80, 100 - age));
-    const bondPercentage = Math.min(50, age - 20);
-    const cashPercentage = Math.max(5, Math.min(20, totalNetWorth < 50000 ? 15 : 10));
-    const realEstatePercentage = Math.min(30, totalNetWorth > 100000 ? 15 : 5);
+    const stockPercentage = Math.max(20, Math.min(60, 100 - age));
+    const bondPercentage = Math.min(30, age - 20);
+    const cashPercentage = Math.max(5, Math.min(15, totalNetWorth < 50000 ? 15 : 10));
+    const realEstatePercentage = Math.min(25, totalNetWorth > 100000 ? 20 : 10);
+    const alternativePercentage = 10;
     
-    // Normalize percentages
-    const total = stockPercentage + bondPercentage + cashPercentage + realEstatePercentage;
+    const total = stockPercentage + bondPercentage + cashPercentage + realEstatePercentage + alternativePercentage;
     
     return {
         stocks: Math.round((stockPercentage / total) * 100),
-        bonds: Math.round((bondPercentage / total) * 100),
-        cash: Math.round((cashPercentage / total) * 100),
+        cash: Math.round((bondPercentage / total) * 100 + (cashPercentage / total) * 100),
         realEstate: Math.round((realEstatePercentage / total) * 100),
-        retirement: Math.min(40, age - 20), // Separate recommendation
-        other: 5 // Conservative allocation for other investments
+        privateBusiness: 0,
+        alternatives: Math.round((alternativePercentage / total) * 100)
     };
 }
 
 function displayResults() {
+    displayHumanLifeValue();
     displayAssetCharts();
-    displayInsuranceAnalysis();
-    displayProsAndCons();
     displayActionItems();
+}
+
+function displayHumanLifeValue() {
+    const hlv = userData.recommendations.humanLifeValue;
+    const { existingCoverage } = userData;
+    
+    document.getElementById('hlvValue').textContent = formatCurrency(hlv.value);
+    
+    const gap = Math.max(0, hlv.value - existingCoverage);
+    if (gap > 0) {
+        document.getElementById('coverageGap').innerHTML = 
+            `<p class="gap-negative">Coverage Gap: ${formatCurrency(gap)}</p>`;
+    } else {
+        document.getElementById('coverageGap').innerHTML = 
+            `<p class="gap-positive">Coverage is Adequate</p>`;
+    }
 }
 
 function displayAssetCharts() {
     const currentAllocation = calculateCurrentAllocation();
     const recommendedAllocation = userData.recommendations.assetAllocation;
+    const benchmarkModel = document.getElementById('benchmarkModel').value;
+    const benchmarkAllocation = BENCHMARK_MODELS[benchmarkModel];
     
-    // Current allocation chart
-    createPieChart('currentChart', currentAllocation, 'Current Allocation');
+    if (charts.current) charts.current.destroy();
+    if (charts.recommended) charts.recommended.destroy();
+    if (charts.benchmark) charts.benchmark.destroy();
     
-    // Recommended allocation chart
-    createPieChart('recommendedChart', recommendedAllocation, 'Recommended Allocation');
+    charts.current = createPieChart('currentChart', currentAllocation, 'Your Current Allocation');
+    charts.recommended = createPieChart('recommendedChart', recommendedAllocation, 'Recommended Allocation');
+    charts.benchmark = createPieChart('benchmarkChart', benchmarkAllocation, benchmarkAllocation.name);
+    
+    calculateAlignmentScore(currentAllocation, benchmarkAllocation);
 }
 
 function calculateCurrentAllocation() {
     const { assets, totalNetWorth } = userData;
-    if (totalNetWorth === 0) return {};
+    if (totalNetWorth === 0) return { stocks: 0, cash: 0, realEstate: 0, privateBusiness: 0, alternatives: 0 };
     
     return {
         cash: Math.round((assets.cash / totalNetWorth) * 100),
         stocks: Math.round((assets.stocks / totalNetWorth) * 100),
-        bonds: Math.round((assets.bonds / totalNetWorth) * 100),
         realEstate: Math.round((assets.realEstate / totalNetWorth) * 100),
-        retirement: Math.round((assets.retirement / totalNetWorth) * 100),
-        other: Math.round((assets.other / totalNetWorth) * 100)
+        privateBusiness: Math.round((assets.privateBusiness / totalNetWorth) * 100),
+        alternatives: Math.round((assets.alternatives / totalNetWorth) * 100)
     };
+}
+
+function calculateAlignmentScore(currentAllocation, benchmarkAllocation) {
+    const categories = ['cash', 'stocks', 'realEstate', 'privateBusiness', 'alternatives'];
+    let totalDifference = 0;
+    
+    categories.forEach(cat => {
+        const current = currentAllocation[cat] || 0;
+        const benchmark = benchmarkAllocation[cat] || 0;
+        totalDifference += Math.abs(current - benchmark);
+    });
+    
+    const alignmentScore = Math.max(0, Math.round(100 - (totalDifference / 2)));
+    document.getElementById('alignmentScore').textContent = alignmentScore;
 }
 
 function createPieChart(canvasId, data, title) {
@@ -199,16 +243,24 @@ function createPieChart(canvasId, data, title) {
     
     const labels = [];
     const values = [];
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+    const colors = ['#D4AF37', '#4BC0C0', '#36A2EB', '#9966FF', '#FF9F40'];
     
-    Object.entries(data).forEach(([key, value]) => {
-        if (value > 0) {
-            labels.push(capitalizeFirst(key) + ` (${value}%)`);
+    const categoryNames = {
+        cash: 'Cash/Bonds',
+        stocks: 'Public Equities',
+        realEstate: 'Real Estate',
+        privateBusiness: 'Private Business',
+        alternatives: 'Alternatives'
+    };
+    
+    Object.entries(data).forEach(([key, value], index) => {
+        if (key !== 'name' && value > 0) {
+            labels.push(`${categoryNames[key] || key}: ${value}%`);
             values.push(value);
         }
     });
     
-    new Chart(ctx, {
+    return new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -216,124 +268,81 @@ function createPieChart(canvasId, data, title) {
                 data: values,
                 backgroundColor: colors.slice(0, values.length),
                 borderWidth: 2,
-                borderColor: '#fff'
+                borderColor: '#161B22'
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        color: '#D4AF37',
+                        font: {
+                            size: 11
+                        }
+                    }
                 },
                 title: {
-                    display: true,
-                    text: title
+                    display: false
                 }
             }
         }
     });
 }
 
-function displayInsuranceAnalysis() {
-    const insurance = userData.recommendations.lifeInsurance;
-    const resultsDiv = document.getElementById('insuranceResults');
+function updateBenchmarkChart() {
+    const benchmarkModel = document.getElementById('benchmarkModel').value;
+    const benchmarkAllocation = BENCHMARK_MODELS[benchmarkModel];
+    const currentAllocation = calculateCurrentAllocation();
     
-    let html = `
-        <div class="insurance-summary">
-            <div class="metric">
-                <h4>Recommended Coverage</h4>
-                <span class="value">${formatCurrency(insurance.recommended)}</span>
-            </div>
-            <div class="metric">
-                <h4>Current Coverage</h4>
-                <span class="value">${formatCurrency(insurance.current)}</span>
-            </div>
-            <div class="metric">
-                <h4>Coverage Gap</h4>
-                <span class="value ${insurance.gap > 0 ? 'negative' : 'positive'}">${formatCurrency(insurance.gap)}</span>
-            </div>
-            <div class="metric">
-                <h4>Coverage Adequacy</h4>
-                <span class="value ${insurance.adequacy.toLowerCase()}">${insurance.adequacy}</span>
-            </div>
-        </div>
-    `;
+    if (charts.benchmark) charts.benchmark.destroy();
+    charts.benchmark = createPieChart('benchmarkChart', benchmarkAllocation, benchmarkAllocation.name);
     
-    resultsDiv.innerHTML = html;
-}
-
-function displayProsAndCons() {
-    const { hasLifeInsurance } = userData;
-    const insurance = userData.recommendations.lifeInsurance;
-    
-    const pros = [
-        "Provides financial security for dependents",
-        "Tax-advantaged death benefit",
-        "Can build cash value over time (whole life)",
-        "Estate planning benefits",
-        "Business succession planning option"
-    ];
-    
-    const cons = [
-        "Monthly premium costs",
-        "Complexity of different policy types",
-        "Opportunity cost of premium payments",
-        "May not be needed if financially independent",
-        "Policy lapses if premiums not paid"
-    ];
-    
-    // Customize based on user situation
-    if (userData.dependents === 0) {
-        cons.unshift("Limited need with no dependents");
-    }
-    
-    if (userData.age > 60) {
-        cons.push("Higher premiums due to age");
-    }
-    
-    if (insurance.adequacy === 'Adequate') {
-        pros.unshift("Current coverage appears sufficient");
-    }
-    
-    document.getElementById('prosList').innerHTML = pros.map(pro => `<li>${pro}</li>`).join('');
-    document.getElementById('consList').innerHTML = cons.map(con => `<li>${con}</li>`).join('');
+    calculateAlignmentScore(currentAllocation, benchmarkAllocation);
+    displayActionItems();
 }
 
 function displayActionItems() {
     const actions = [];
-    const insurance = userData.recommendations.lifeInsurance;
+    const benchmarkModel = document.getElementById('benchmarkModel').value;
+    const benchmark = BENCHMARK_MODELS[benchmarkModel];
     const currentAllocation = calculateCurrentAllocation();
-    const recommendedAllocation = userData.recommendations.assetAllocation;
+    const hlv = userData.recommendations.humanLifeValue;
     
-    // Insurance actions
-    if (insurance.gap > 0) {
-        actions.push(`Consider increasing life insurance coverage by ${formatCurrency(insurance.gap)}`);
-    } else if (!userData.hasLifeInsurance && userData.dependents > 0) {
-        actions.push(`Consider obtaining life insurance coverage of ${formatCurrency(insurance.recommended)}`);
+    if (hlv.value - userData.existingCoverage > 0) {
+        actions.push(`Consider life insurance coverage of ${formatCurrency(hlv.value)} to protect your human capital`);
     }
     
-    // Asset allocation actions
-    if (Math.abs(currentAllocation.cash - recommendedAllocation.cash) > 10) {
-        actions.push(`Adjust cash allocation from ${currentAllocation.cash}% to ${recommendedAllocation.cash}%`);
-    }
+    const categories = ['alternatives', 'stocks', 'realEstate', 'privateBusiness', 'cash'];
+    const categoryNames = {
+        alternatives: 'alternative investments',
+        stocks: 'public equities',
+        realEstate: 'real estate',
+        privateBusiness: 'private business assets',
+        cash: 'cash/bonds'
+    };
     
-    if (Math.abs(currentAllocation.stocks - recommendedAllocation.stocks) > 15) {
-        actions.push(`Rebalance stock allocation from ${currentAllocation.stocks}% to ${recommendedAllocation.stocks}%`);
-    }
+    categories.forEach(cat => {
+        const current = currentAllocation[cat] || 0;
+        const target = benchmark[cat] || 0;
+        const diff = target - current;
+        
+        if (Math.abs(diff) > 5) {
+            const action = diff > 0 
+                ? `To align with the ${benchmark.name}, increase ${categoryNames[cat]} by ${Math.abs(diff)}%`
+                : `To align with the ${benchmark.name}, decrease ${categoryNames[cat]} by ${Math.abs(diff)}%`;
+            actions.push(action);
+        }
+    });
     
-    // General recommendations
-    if (userData.totalNetWorth < userData.annualIncome * 1) {
-        actions.push("Build emergency fund equal to 3-6 months of expenses");
-    }
-    
-    if (currentAllocation.retirement < 10 && userData.age < 50) {
-        actions.push("Maximize retirement account contributions");
+    if (actions.length === 0) {
+        actions.push(`Your portfolio is well-aligned with the ${benchmark.name}`);
     }
     
     document.getElementById('actionList').innerHTML = actions.map(action => `<li>${action}</li>`).join('');
 }
 
-// Utility functions
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -343,16 +352,10 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-function capitalizeFirst(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// Form submission handler
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('leadForm');
     if (form) {
         form.addEventListener('submit', function(e) {
-            // Let Netlify handle the form submission
             setTimeout(() => {
                 alert('Thank you! Your personalized report will be sent to your email within 24 hours.');
             }, 100);
