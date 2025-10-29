@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Allocation & Life Insurance Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Asset Allocation & Life Insurance Calculator</h1>
+            <p>Optimize your financial portfolio with personalized insights</p>
+        </header>
+
+        <div class="calculator-wrapper">
+            <!-- Step 1: Basic Information -->
+            <section class="step active" id="step1">
+                <h2>Tell Us About Your Finances</h2>
+                <form id="basicInfoForm">
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" min="18" max="100" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="annualIncome">Annual Income ($):</label>
+                        <input type="number" id="annualIncome" min="0" step="1000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dependents">Number of Dependents:</label>
+                        <input type="number" id="dependents" min="0" max="10" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasLifeInsurance">Do you currently have life insurance?</label>
+                        <select id="hasLifeInsurance" required>
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="existingCoverageGroup" style="display: none;">
+                        <label for="existingCoverage">Current Life Insurance Coverage ($):</label>
+                        <input type="number" id="existingCoverage" min="0" step="1000">
+                    </div>
+                    
+                    <button type="button" onclick="nextStep()">Continue</button>
+                </form>
+            </section>
+
+            <!-- Step 2: Asset Allocation -->
+            <section class="step" id="step2">
+                <h2>Current Asset Breakdown</h2>
+                <form id="assetForm">
+                    <div class="form-group">
+                        <label for="cash">Cash & Savings ($):</label>
+                        <input type="number" id="cash" min="0" step="100" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stocks">Stocks & Securities ($):</label>
+                        <input type="number" id="stocks" min="0" step="100" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bonds">Bonds & Fixed Income ($):</label>
+                        <input type="number" id="bonds" min="0" step="100" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="realEstate">Real Estate ($):</label>
+                        <input type="number" id="realEstate" min="0" step="1000" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="retirement">Retirement Accounts ($):</label>
+                        <input type="number" id="retirement" min="0" step="100" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="other">Other Investments ($):</label>
+                        <input type="number" id="other" min="0" step="100" value="0">
+                    </div>
+                    
+                    <div class="total-display">
+                        <strong>Total Net Worth: $<span id="totalNetWorth">0</span></strong>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" onclick="prevStep()">Back</button>
+                        <button type="button" onclick="calculateResults()">Calculate Results</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Step 3: Results -->
+            <section class="step" id="step3">
+                <h2>Your Personalized Analysis</h2>
+                
+                <div class="results-container">
+                    <!-- Current vs Optimized Allocation -->
+                    <div class="chart-section">
+                        <h3>Current vs Recommended Asset Allocation</h3>
+                        <div class="charts-wrapper">
+                            <div class="chart-container">
+                                <h4>Current Allocation</h4>
+                                <canvas id="currentChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h4>Recommended Allocation</h4>
+                                <canvas id="recommendedChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Life Insurance Analysis -->
+                    <div class="insurance-analysis">
+                        <h3>Life Insurance Analysis</h3>
+                        <div id="insuranceResults"></div>
+                    </div>
+
+                    <!-- Pros and Cons -->
+                    <div class="pros-cons">
+                        <h3>Life Insurance Benefits Analysis</h3>
+                        <div class="pros-cons-grid">
+                            <div class="pros">
+                                <h4>✅ Pros</h4>
+                                <ul id="prosList"></ul>
+                            </div>
+                            <div class="cons">
+                                <h4>⚠️ Considerations</h4>
+                                <ul id="consList"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items -->
+                    <div class="action-items">
+                        <h3>Recommended Actions</h3>
+                        <ul id="actionList"></ul>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="prevStep()">Back</button>
+                    <button type="button" onclick="showLeadForm()">Get Personalized Report</button>
+                </div>
+            </section>
+
+            <!-- Lead Capture Form -->
+            <section class="step" id="leadCapture">
+                <h2>Get Your Detailed Financial Report</h2>
+                <p>Enter your information to receive a comprehensive analysis and personalized recommendations.</p>
+                
+                <form id="leadForm" name="financial-report" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+                    <!-- Honeypot field for spam prevention -->
+                    <div style="display: none;">
+                        <label for="bot-field">Don't fill this out if you're human:</label>
+                        <input name="bot-field" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name:</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="consent" name="consent" required>
+                            I agree to receive personalized financial recommendations and occasional updates
+                        </label>
+                    </div>
+                    
+                    <input type="hidden" name="calculatorData" id="calculatorData">
+                    
+                    <button type="submit">Get My Report</button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <script src="calculator.js"></script>
+</body>
+</html>
