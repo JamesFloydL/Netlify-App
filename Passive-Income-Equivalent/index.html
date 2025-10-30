@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passive Income Equivalent Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffffff;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .header-section {
+      text-align: center;
+      margin: 40px auto 20px;
+      max-width: 800px;
+    }
+
+    .header-logo {
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .header-subtitle {
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+
+    h1 {
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      text-align: center;
+      font-size: 60px;
+      margin-top: 40px;
+    }
+
+    .calculator-form {
+      border: 2px solid #e5e7eb;
+      padding: 30px;
+      margin: 0 auto;
+      border-radius: 16px;
+      background-color: #f9fafb;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (max-width: 600px) {
+      .calculator-form {
+        width: 90%;
+      }
+      h1 {
+        font-size: 40px;
+      }
+    }
+
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .calculator-form {
+        width: 70%;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .calculator-form {
+        width: 50%;
+      }
+    }
+
+    .description {
+      font-family: 'Inter', sans-serif;
+      color: #6b7280;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .input-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .input-label {
+      font-family: 'Inter', sans-serif;
+      color: #374151;
+      font-size: 18px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    .income-input {
+      font-family: 'Inter', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      padding: 15px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      text-align: center;
+      width: 100%;
+      max-width: 350px;
+      background-color: #ffffff;
+      color: #1f2937;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .income-input:focus {
+      outline: none;
+      border-color: #1f2937;
+      box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.1);
+    }
+
+    #result {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      background-color: #ffffff;
+      color: #1f2937;
+      padding: 25px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      margin-top: 25px;
+      line-height: 1.6;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .formula-note {
+      font-family: 'Inter', sans-serif;
+      text-align: center;
+      background-color: #f9fafb;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      .header-logo {
+        max-width: 280px;
+      }
+      .header-subtitle {
+        font-size: 20px;
+      }
+      .income-input {
+        font-size: 24px;
+        max-width: 100%;
+      }
+      #result {
+        font-size: 18px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-section">
+  <img src="header-logo.png" alt="BetterWealth Logo" class="header-logo">
+  <h2 class="header-subtitle">Passive Income Equivalent Calculator</h2>
+</div>
+
+<div class="calculator-form">
+  <p class="description">Find out what size portfolio you'd need to safely earn your target passive income at a 4% distribution rate.</p>
+  
+  <div class="input-container">
+    <label for="monthlyIncome" class="input-label">Desired Passive Monthly Income:</label>
+    <input 
+      type="text" 
+      id="monthlyIncome" 
+      class="income-input" 
+      placeholder="$5,000" 
+      value=""
+      autocomplete="off"
+    >
+  </div>
+  
+  <div id="result">Enter your desired monthly income to see the required portfolio size.</div>
+  
+  <div class="formula-note">
+    Formula: Required Portfolio = (Monthly Income × 12) / 0.04
+  </div>
+</div>
+
+<div style="text-align: center; margin-top: 40px; padding: 20px;">
+  <a href="/TheCenterofItAll/index.html" style="display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #1f2937 0%, #374151 100%); color: #ffffff; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s ease; border: 2px solid #e5e7eb;">← Back to Calculator Hub</a>
+</div>
+
+<script>
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+function parseCurrency(value) {
+  const cleanValue = value.replace(/[^0-9.]/g, '');
+  return parseFloat(cleanValue) || 0;
+}
+
+function roundToNearest(value, nearest) {
+  return Math.round(value / nearest) * nearest;
+}
+
+function calculatePortfolio() {
+  const input = document.getElementById('monthlyIncome');
+  const resultDiv = document.getElementById('result');
+  
+  const monthlyIncome = parseCurrency(input.value);
+  
+  if (monthlyIncome <= 0) {
+    resultDiv.innerHTML = 'Enter your desired monthly income to see the required portfolio size.';
+    return;
+  }
+  
+  const annualIncome = monthlyIncome * 12;
+  const requiredPortfolio = annualIncome / 0.04;
+  const roundedPortfolio = roundToNearest(requiredPortfolio, 1000);
+  
+  const formattedIncome = formatCurrency(monthlyIncome);
+  const formattedPortfolio = formatCurrency(roundedPortfolio);
+  
+  resultDiv.innerHTML = `To earn ${formattedIncome} per month at a 4% annual distribution rate, you'd need a portfolio of ${formattedPortfolio}.`;
+}
+
+document.getElementById('monthlyIncome').addEventListener('input', function(e) {
+  calculatePortfolio();
+});
+
+document.getElementById('monthlyIncome').addEventListener('blur', function(e) {
+  const value = parseCurrency(e.target.value);
+  if (value > 0) {
+    e.target.value = formatCurrency(value);
+  }
+});
+
+document.getElementById('monthlyIncome').addEventListener('focus', function(e) {
+  const value = parseCurrency(e.target.value);
+  if (value > 0) {
+    e.target.value = value.toString();
+  }
+});
+</script>
+
+</body>
+</html>
