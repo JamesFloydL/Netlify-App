@@ -1,3 +1,4 @@
+console.log("✅ app.js loaded");
 function controlReturn(r, c) {
     return ((r - c) / c) * 100;
 }
